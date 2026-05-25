@@ -1,0 +1,7 @@
+flask
+nltk
+spacy
+scikit-learn
+matplotlib
+seaborn
+langdetect

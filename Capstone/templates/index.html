@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NLP Text Analyzer</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .form-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            display: block;
+            margin: 10px auto;
+        }
+
+        .btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .char-count {
+            font-size: 12px;
+            color: #777;
+            text-align: right;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🧠 NLP Text Analysis System</h1>
+
+    <p class="subtitle">
+        Generate summaries, extract entities, and visualize linguistic insights.
+    </p>
+
+    <div class="form-card">
+        <form action="/analyze" method="post" enctype="multipart/form-data" onsubmit="return validateInput()">
+
+            <textarea 
+                id="textInput"
+                name="text" 
+                rows="8" 
+                placeholder="Paste or type a paragraph..."
+                oninput="updateCount()">
+            </textarea>
+
+            <div class="char-count">
+                <span id="count">0</span> characters
+            </div>
+
+            <p style="text-align:center; margin:10px 0; color:#777;">OR</p>
+
+            <input 
+                type="file" 
+                name="file" 
+                id="fileInput"
+                accept=".txt,.pdf"
+                onchange="clearText()"
+            >
+
+            <button type="submit" class="btn">🔍 Analyze Text</button>
+
+        </form>
+    </div>
+
+</div>
+
+<script>
+function updateCount() {
+    const text = document.getElementById("textInput").value;
+    document.getElementById("count").innerText = text.length;
+}
+
+function clearText() {
+    document.getElementById("textInput").value = "";
+    document.getElementById("count").innerText = 0;
+}
+
+function validateInput() {
+    const text = document.getElementById("textInput").value.trim();
+    const file = document.getElementById("fileInput").files.length;
+
+    if (!text && file === 0) {
+        alert("Please enter text or upload a file.");
+        return false;
+    }
+
+    if (text && text.split(" ").length < 10) {
+        alert("Please enter a longer paragraph.");
+        return false;
+    }
+
+    return true;
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Analysis Result</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <style>
+        .section { margin-top: 28px; }
+        .card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .btn-row { margin-top: 12px; display:flex; gap:10px; flex-wrap:wrap; }
+        .toggle-btn { background:#3498db; color:white; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+        .toggle-btn.hide { background:#e74c3c; }
+        .graphs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+        .graph-card {
+            background:#fff;
+            padding:12px;
+            border-radius:10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .graph-card img {
+            width: 100%;
+            height: auto;
+        }
+        .muted { color:#666; font-size: 14px; }
+        .empty { color:#999; font-style: italic; }
+    </style>
+</head>
+
+<body>
+<div class="container">
+
+    <h1>📊 Analysis Results</h1>
+
+    {% if error %}
+        <div class="card" style="background:#ffe6e6;">
+            <p><strong>Error:</strong> {{ error }}</p>
+        </div>
+    {% endif %}
+
+    <div class="section card">
+        <h2>Sentence Importance Scores</h2>
+
+        {% if combined %}
+        <table>
+            <tr>
+                <th>Sentence</th>
+                <th>Score</th>
+            </tr>
+            {% for s, score in combined %}
+            <tr>
+                <td>{{ s }}</td>
+                <td>{{ "%.4f"|format(score) }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p class="empty">No sentence scores available.</p>
+        {% endif %}
+    </div>
+
+    <div class="section card">
+        <h2>Generated Summary</h2>
+
+        {% if highlighted_summary %}
+        <div class="summary-box">
+            {% for s in highlighted_summary %}
+                <p>• {{ s | safe }}</p>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p class="empty">No summary generated.</p>
+        {% endif %}
+
+        <p class="muted">Highlighted terms show detected entities (e.g., ORG, PERSON, GPE).</p>
+    </div>
+
+    <div class="section card">
+        <h2>Named Entities</h2>
+
+        {% if entities %}
+        <table>
+            <tr>
+                <th>Entity</th>
+                <th>Type</th>
+            </tr>
+            {% for ent in entities %}
+            <tr>
+                <td>{{ ent.text }}</td>
+                <td>{{ ent.label }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+            <p class="empty">No entities detected.</p>
+        {% endif %}
+    </div>
+
+    <div class="section card">
+        <h2>Visualizations</h2>
+
+        <div class="btn-row">
+            <button onclick="toggleGraphs()" id="toggleBtn" class="toggle-btn">
+                📈 Show Visualizations
+            </button>
+        </div>
+
+        <div id="graphs" style="display:none; margin-top:15px;">
+            <div class="graphs-grid">
+
+                {% if word_freq %}
+                <div class="graph-card">
+                    <h3>📈 Word Frequency</h3>
+                    <img src="{{ url_for('static', filename=word_freq) }}">
+                </div>
+                {% endif %}
+
+                {% if pos_dist %}
+                <div class="graph-card">
+                    <h3>🧠 POS Tag Distribution</h3>
+                    <img src="{{ url_for('static', filename=pos_dist) }}">
+                </div>
+                {% endif %}
+
+                {% if entity_dist %}
+                <div class="graph-card">
+                    <h3>🏷️ Entity Type Distribution</h3>
+                    <img src="{{ url_for('static', filename=entity_dist) }}">
+                </div>
+                {% endif %}
+
+                {% if not word_freq and not pos_dist and not entity_dist %}
+                    <p class="empty">No visualizations available.</p>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Back -->
+    <div class="section">
+        <a href="/">
+            <button class="toggle-btn">⬅️ Back</button>
+        </a>
+    </div>
+
+</div>
+
+<script>
+function toggleGraphs() {
+    const graphDiv = document.getElementById("graphs");
+    const btn = document.getElementById("toggleBtn");
+
+    const isHidden = (graphDiv.style.display === "none" || graphDiv.style.display === "");
+    graphDiv.style.display = isHidden ? "block" : "none";
+
+    btn.innerHTML = isHidden ? "❌ Hide Visualizations" : "📈 Show Visualizations";
+    btn.classList.toggle("hide", isHidden);
+}
+</script>
+
+</body>
+</html>
